@@ -6,10 +6,10 @@
  */
 
 import React from 'react';
-import type {PropsWithChildren} from 'react';
 import {
+  FlatList,
+  Pressable,
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -17,22 +17,24 @@ import {
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
+function ListItem({item}: {item: number}): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const expensiveOperation = Array(10000)
+    .fill(undefined)
+    .map((_, idx) => new Date().getTime() + idx);
   return (
-    <View style={styles.sectionContainer}>
+    <View
+      style={{
+        height: 60,
+        margin: 10,
+        padding: 10,
+        borderWidth: 1,
+        borderRadius: 8,
+        borderColor: isDarkMode ? Colors.white : Colors.black,
+        overflow: 'hidden',
+      }}>
       <Text
         style={[
           styles.sectionTitle,
@@ -40,7 +42,7 @@ function Section({children, title}: SectionProps): React.JSX.Element {
             color: isDarkMode ? Colors.white : Colors.black,
           },
         ]}>
-        {title}
+        Item number {item}
       </Text>
       <Text
         style={[
@@ -49,18 +51,23 @@ function Section({children, title}: SectionProps): React.JSX.Element {
             color: isDarkMode ? Colors.light : Colors.dark,
           },
         ]}>
-        {children}
+        Keep scrolling!
       </Text>
+      <Header />
     </View>
   );
 }
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const [isListVisible, setIsListVisible] = React.useState(false);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+  const data = Array(1000)
+    .fill(undefined)
+    .map((_, idx) => idx);
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -68,30 +75,30 @@ function App(): React.JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
+      <View style={backgroundStyle}>
         <Header />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+          <Pressable onPress={() => setIsListVisible(!isListVisible)}>
+            <Text style={{padding: 20}}>Toggle list visibility</Text>
+          </Pressable>
+          {isListVisible && (
+            <FlatList
+              data={data}
+              renderItem={({item}) => {
+                return <ListItem item={item} />;
+              }}
+              getItemLayout={(_data, index) => ({
+                length: 80,
+                offset: 80 * index,
+                index,
+              })}
+            />
+          )}
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -102,12 +109,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   sectionTitle: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: '600',
   },
   sectionDescription: {
     marginTop: 8,
-    fontSize: 18,
+    fontSize: 12,
     fontWeight: '400',
   },
   highlight: {
