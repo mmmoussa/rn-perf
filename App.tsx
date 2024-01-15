@@ -53,10 +53,13 @@ function ListItem({item}: {item: number}): React.JSX.Element {
         ]}>
         Keep scrolling!
       </Text>
-      <Header />
     </View>
   );
 }
+
+const data = Array(1000)
+  .fill(undefined)
+  .map((_, idx) => idx);
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -64,10 +67,8 @@ function App(): React.JSX.Element {
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    flex: 1,
   };
-  const data = Array(1000)
-    .fill(undefined)
-    .map((_, idx) => idx);
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -80,6 +81,7 @@ function App(): React.JSX.Element {
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
+            flex: 1,
           }}>
           <Pressable onPress={() => setIsListVisible(!isListVisible)}>
             <Text style={{padding: 20}}>Toggle list visibility</Text>
